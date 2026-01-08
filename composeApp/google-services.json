@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "229500290456",
+    "project_id": "kmm-firebase-auth",
+    "storage_bucket": "kmm-firebase-auth.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:229500290456:android:10f7e318d57812050f97ed",
+        "android_client_info": {
+          "package_name": "com.example.auth.kmm_firebase_auth"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBAVJx2_X3U6IsE6MtOw46xIy88MzbtvS8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
