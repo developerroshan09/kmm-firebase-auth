@@ -1,0 +1,54 @@
+# ====================
+# Android / Kotlin
+# ====================
+*.iml
+.gradle
+.kotlin
+**/build/
+!src/**/build/
+local.properties
+
+# Android Studio
+.idea/
+.caches/
+.externalNativeBuild
+.cxx
+captures
+
+# Gradle wrapper
+gradle/wrapper/gradle-wrapper.jar
+gradle/wrapper/gradle-wrapper.properties
+
+# ====================
+# macOS / Xcode / iOS
+# ====================
+*.DS_Store
+xcuserdata/
+*.xcuserstate
+*.xcworkspace/contents.xcworkspacedata
+*.xcshareddata/WorkspaceSettings.xcsettings
+*.xcodeproj/*
+!*.xcodeproj/project.pbxproj
+!*.xcodeproj/xcshareddata/
+!*.xcodeproj/project.xcworkspace/
+*.xcworkspace/contents.xcworkspacedata
+
+# CocoaPods
+Pods/
+Podfile.lock
+
+# ====================
+# Node.js (if used)
+# ====================
+node_modules/
+
+# ====================
+# IDEs
+# ====================
+.vscode/
+
+# ====================
+# Optional / Misc
+# ====================
+.DS_Store
+*.log

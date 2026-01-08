@@ -1,0 +1,7 @@
+TEAM_ID=
+
+PRODUCT_NAME=kmm_firebase_auth
+PRODUCT_BUNDLE_IDENTIFIER=com.example.auth.kmm_firebase_auth.kmm_firebase_auth$(TEAM_ID)
+
+CURRENT_PROJECT_VERSION=1
+MARKETING_VERSION=1.0
