@@ -8,24 +8,27 @@ import kotlinx.coroutines.flow.Flow
  * This is an abstraction in the domain layer, implemented by platform-specific
  * data sources in the data layer (e.g., iOSAuthRepository in iosMain).
  */
-interface AuthRepository {
+expect class FirebaseAuthWrapper() {
+
+    fun signInAnonymously()
+
     /**
      * Registers a new user with email and password.
      */
-    suspend fun signUp(email: String, password: String): User
+    fun signUp(email: String, password: String): User
 
     /**
      * Authenticates an existing user with email and password.
      */
-    suspend fun login(email: String, password: String): User
+    fun login(email: String, password: String)
 
     // google sign-in
-    suspend fun loginWithGoogle(idToken: String): Result<User>
+    fun loginWithGoogle(idToken: String): Result<User>
 
     /**
      * Logs out the current user.
      */
-    suspend fun logout(): Result<Unit>
+    fun logout(): Result<Unit>
 
     /**
      * Observes the authentication state of the user.
