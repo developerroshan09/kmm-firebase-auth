@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.Flow
  * This is an abstraction in the domain layer, implemented by platform-specific
  * data sources in the data layer (e.g., iOSAuthRepository in iosMain).
  */
-expect class FirebaseAuthWrapper() {
+public expect class FirebaseAuthWrapper() {
 
     fun signInAnonymously()
 

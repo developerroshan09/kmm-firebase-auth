@@ -1,9 +1,11 @@
+//import com.sun.org.apache.xalan.internal.xsltc.compiler.util.Util.baseName
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     id("com.android.application")
     id("com.google.gms.google-services")
+    kotlin("native.cocoapods")
 
     alias(libs.plugins.kotlinMultiplatform)
 //    alias(libs.plugins.androidApplication)
@@ -19,12 +21,30 @@ kotlin {
     }
 
     listOf(
+        iosX64(),
         iosArm64(),
         iosSimulatorArm64()
     ).forEach { iosTarget ->
         iosTarget.binaries.framework {
             baseName = "ComposeApp"
             isStatic = true
+        }
+    }
+
+    cocoapods {
+        version = "1.0.0"
+        summary = "Firebase bridge"
+        homepage = "https://github.com/developerroshan09/kmm-firebase-auth.git"
+        ios.deploymentTarget = "15.0" // Ensure matching with Podfile
+        podfile = project.file("../iosApp/Podfile")
+
+        pod("FirebaseCore")
+        pod("FirebaseAuth") // Add specific modules as needed
+
+        framework {
+            baseName = "ComposeApp"
+            // Fixes the bundle ID warning
+            freeCompilerArgs += listOf("-Xbinary=bundleId=com.example.auth.kmm-firebase-auth.framework")
         }
     }
 
