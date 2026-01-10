@@ -1,18 +1,11 @@
 import SwiftUI
-import FirebaseCore
+import ComposeApp
 
 class AppDelegate: NSObject, UIApplicationDelegate {
     func application(_ application: UIApplication,
                      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
         // Ensure this is called once and ONLY here
-        FirebaseApp.configure()
-        // check immediately after configuration
-                if (FirebaseApp.app() != nil) {
-                    print("✅ FirebaseApp successfully configured.")
-                } else {
-                    print("❌ FirebaseApp configuration FAILED.")
-                }
-
+        FirebaseAuthWrapper().configure()
         return true
     }
 }

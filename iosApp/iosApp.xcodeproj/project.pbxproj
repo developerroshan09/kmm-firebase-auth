@@ -38,6 +38,8 @@
 		};
 		FA4E8949262F0EB6DFABF9D5 /* Configuration */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+			);
 			path = Configuration;
 			sourceTree = "<group>";
 		};
@@ -104,7 +106,6 @@
 				E060CB1962813ED4B9A2FCFD /* Frameworks */,
 				D3A1F2FAF59A5C2B45E4FA91 /* Resources */,
 				0D368DD7D30CD28587F5ED25 /* [CP] Embed Pods Frameworks */,
-				F58A487AAF73A46F76C2D2D7 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -114,8 +115,6 @@
 				A0254020D32B7185775349D3 /* iosApp */,
 			);
 			name = iosApp;
-			packageProductDependencies = (
-			);
 			productName = iosApp;
 			productReference = 37E45AF4FDEAA9ED89670A18 /* kmm_firebase_auth.app */;
 			productType = "com.apple.product-type.application";
@@ -144,8 +143,6 @@
 			);
 			mainGroup = D76D3CE22E89747C88A48D32;
 			minimizedProjectReferenceProxies = 1;
-			packageReferences = (
-			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 5BBD365A92AF598148B48300 /* Products */;
 			projectDirPath = "";
@@ -175,13 +172,9 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-iosApp/Pods-iosApp-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
-			inputPaths = (
-			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-iosApp/Pods-iosApp-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -228,27 +221,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "export JAVA_HOME=/opt/homebrew/opt/openjdk@17/libexec/openjdk.jdk/Contents/Home\nexport PATH=\"$JAVA_HOME/bin:$PATH\"\n\nif [ \"YES\" = \"$OVERRIDE_KOTLIN_BUILD_IDE_SUPPORTED\" ]; then\n  echo \"Skipping Gradle build task invocation due to OVERRIDE_KOTLIN_BUILD_IDE_SUPPORTED environment variable set to \\\"YES\\\"\"\n  exit 0\nfi\n\ncd \"$SRCROOT/..\"\n\n# Determine the task based on the platform\nif [ \"$PLATFORM_NAME\" = \"iphonesimulator\" ]; then\n    ./gradlew :composeApp:linkDebugFrameworkIosSimulatorArm64\nelse\n    ./gradlew :composeApp:linkDebugFrameworkIosArm64\nfi\n";
-		};
-		F58A487AAF73A46F76C2D2D7 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-iosApp/Pods-iosApp-resources-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-iosApp/Pods-iosApp-resources-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-iosApp/Pods-iosApp-resources.sh\"\n";
-			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
 
