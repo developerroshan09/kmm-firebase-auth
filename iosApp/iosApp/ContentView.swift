@@ -6,7 +6,7 @@ struct ContentView: View {
     @State private var authWrapper: FirebaseAuthWrapper? = nil
 
     var body: some View {
-        TestView()
+        RootView()
 //        Button("Test KMP Anonymous Login") {
 //            print("Swift: Triggering Login...")
 //            

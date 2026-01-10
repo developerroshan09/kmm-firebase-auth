@@ -7,20 +7,21 @@ import com.kmm_firebase_auth.domain.model.User
 import kotlinx.coroutines.flow.Flow
 
 actual class FirebaseAuthWrapper actual constructor() {
-    actual fun signUp(email: String, password: String): User {
+    actual suspend fun signUp(email: String, password: String): User {
         TODO("Not yet implemented")
     }
 
-    actual fun login(email: String, password: String) {
+    actual suspend fun login(email: String, password: String): User {
         FirebaseAuth.getInstance()
             .signInWithEmailAndPassword(email, password)
+        return TODO("Provide the return value")
     }
 
-    actual fun loginWithGoogle(idToken: String): Result<User> {
+    actual suspend fun loginWithGoogle(idToken: String): User {
         TODO("Not yet implemented")
     }
 
-    actual fun logout(): Result<Unit> {
+    actual suspend fun logout(): Result<Unit> {
         TODO("Not yet implemented")
     }
 
@@ -40,5 +41,8 @@ actual class FirebaseAuthWrapper actual constructor() {
                     Log.i("FirebaseTest", "❌ Firebase login FAILED", task.exception)
                 }
             }
+    }
+
+    actual fun configure() {
     }
 }

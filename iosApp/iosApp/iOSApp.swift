@@ -1,13 +1,31 @@
 import SwiftUI
+import FirebaseCore
 import ComposeApp
+import GoogleSignIn
 
 class AppDelegate: NSObject, UIApplicationDelegate {
     func application(_ application: UIApplication,
                      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
         // Ensure this is called once and ONLY here
         FirebaseAuthWrapper().configure()
+        if let clientID = FirebaseApp.app()?.options.clientID {
+                  GIDSignIn.sharedInstance.configuration =
+                      GIDConfiguration(clientID: clientID)
+            print("gid shared")
+              }
         return true
     }
+    
+
+    func application(_ app: UIApplication,
+                     open url: URL,
+                     options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+
+        print(" url scheme: \(Bundle.main.object(forInfoDictionaryKey: "CFBundleURLTypes") ?? "NO URL TYPES")")
+
+        return GIDSignIn.sharedInstance.handle(url)
+    }
+
 }
 
 @main

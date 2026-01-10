@@ -7,9 +7,13 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
 import cocoapods.FirebaseAuth.*
+import cocoapods.FirebaseAuth.FIRAuth.Companion.auth
 import cocoapods.FirebaseCore.*
 import kotlinx.cinterop.ExperimentalForeignApi
+import kotlinx.coroutines.suspendCancellableCoroutine
 import platform.Foundation.NSLog
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 import kotlin.experimental.ExperimentalObjCName
 
 @OptIn(ExperimentalForeignApi::class, ExperimentalObjCName::class)
@@ -23,6 +27,30 @@ public actual class FirebaseAuthWrapper {
     // Remove the 'by lazy' - just get auth directly when needed
     private fun getAuth(): FIRAuth {
         return FIRAuth.auth()
+    }
+
+    actual fun configure() {
+        FIRApp.configure()
+        if (FIRApp.defaultApp() != null) {
+            NSLog("✅ FirebaseApp successfully configured.")
+        } else {
+            NSLog("❌ FirebaseApp configuration FAILED.")
+        }
+    }
+
+    private fun observeAuthState() {
+        getAuth().addAuthStateDidChangeListener { _, user ->
+            if (user != null) {
+                _authState.value = AuthState.LoggedIn(
+                    User(
+                        id = user.uid(),
+                        email = user.email(),
+                    )
+                )
+            } else {
+                _authState.value = AuthState.LoggedOut
+            }
+        }
     }
 
     actual fun signInAnonymously() {
@@ -44,18 +72,96 @@ public actual class FirebaseAuthWrapper {
         }
     }
 
-    actual fun signUp(email: String, password: String): User {
-        TODO("Not yet implemented")
-    }
+    actual suspend fun signUp(email: String, password: String): User =
+            suspendCancellableCoroutine { continuation ->
 
-    actual fun login(email: String, password: String) {
-    }
+                auth().createUserWithEmail(email = email, password = password) { result, error ->
+                    if (error != null) {
+                        continuation.resumeWithException(Exception(error.localizedDescription))
+                        return@createUserWithEmail
+                    }
 
-    actual fun loginWithGoogle(idToken: String): Result<User> {
-        TODO("Not yet implemented")
-    }
+                    val firebaseUser = result?.user()
+                    if (firebaseUser != null) {
+                        val user = User(id = firebaseUser.uid(), email = firebaseUser.email())
+                        _authState.value = AuthState.LoggedIn(user)
+                        continuation.resume(user)
+                    } else {
+                        continuation.resumeWithException(Exception("Firebase returned null user"))
+                    }
+                }
+            }
 
-    actual fun logout(): Result<Unit> {
-        TODO("Not yet implemented")
+
+    actual suspend fun login(email: String, password: String): User =
+        suspendCancellableCoroutine { continuation ->
+            auth().signInWithEmail(email = email, password = password) { result, error ->
+                if (error != null) {
+                    continuation.resumeWithException(Exception(error.localizedDescription))
+                    return@signInWithEmail
+                }
+
+                val firebaseUser = result?.user()
+                if (firebaseUser != null) {
+                    val user = User(id = firebaseUser.uid(), email = firebaseUser.email())
+                    _authState.value = AuthState.LoggedIn(user)
+                    continuation.resume(user)
+                } else {
+                    continuation.resumeWithException(Exception("Firebase returned null user"))
+                }
+            }
+        }
+
+
+    actual suspend fun loginWithGoogle(idToken: String): User =
+        suspendCancellableCoroutine { continuation ->
+
+            val credential = FIRGoogleAuthProvider.credentialWithIDToken(
+                idToken = idToken,
+                accessToken = ""
+            )
+
+            getAuth().signInWithCredential(credential) { result, error ->
+                if (error != null) {
+                    continuation.resumeWithException(Exception(error.localizedDescription))
+                    return@signInWithCredential
+                }
+
+                val firebaseUser = result?.user()
+                if (firebaseUser != null) {
+                    val user = User(
+                        id = firebaseUser.uid(),
+                        email = firebaseUser.email()
+                    )
+                    _authState.value = AuthState.LoggedIn(user)
+                    continuation.resume(user)
+                } else {
+                    continuation.resumeWithException(Exception("Google login returned null user"))
+                }
+            }
+        }
+
+//    actual fun logout(): Result<Unit> = try {
+//        auth().signOut(null)
+//        Result.success(Unit)
+//    } catch (e: Throwable) {
+//        Result.failure(e)
+//    }
+
+//    actual fun logout(): Result<Unit> = try {
+//        auth().signOut(null)
+//        Result.success(Unit)
+//    } catch (e: Throwable) {
+//        Result.failure(e)
+//    }
+    actual suspend fun logout(): Result<Unit> {
+        try {
+            auth().signOut(null)
+            _authState.value = AuthState.LoggedOut
+            Result.success(Unit)
+        } catch (e: Throwable) {
+            Result.failure(e)
+        }
+        return Result.failure(IllegalStateException("Firebase logout() failed"))
     }
 }

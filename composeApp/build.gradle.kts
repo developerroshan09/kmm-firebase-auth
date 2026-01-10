@@ -39,7 +39,7 @@ kotlin {
         podfile = project.file("../iosApp/Podfile")
 
         pod("FirebaseCore")
-        pod("FirebaseAuth") // Add specific modules as needed
+        pod("FirebaseAuth")
 
         framework {
             baseName = "ComposeApp"
