@@ -1,24 +1,34 @@
 //import com.sun.org.apache.xalan.internal.xsltc.compiler.util.Util.baseName
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+// xcframework setup
+import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
 
 plugins {
+    // xcframework setup
+    kotlin("multiplatform")
+
     id("com.android.application")
     id("com.google.gms.google-services")
     kotlin("native.cocoapods")
 
-    alias(libs.plugins.kotlinMultiplatform)
+//    alias(libs.plugins.kotlinMultiplatform)
 //    alias(libs.plugins.androidApplication)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
 }
 
 kotlin {
+    @Suppress("DEPRECATION")
     androidTarget {
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_11)
         }
     }
+    // xcframework setup
+    val xcframeworkName = "KmmFirebaseAuth"
+    val xcframework = XCFramework(xcframeworkName)
+
 
     listOf(
         iosX64(),
@@ -26,7 +36,11 @@ kotlin {
         iosSimulatorArm64()
     ).forEach { iosTarget ->
         iosTarget.binaries.framework {
-            baseName = "ComposeApp"
+            baseName = xcframeworkName
+
+            binaryOption("bundleId", "com.roshan.kmmfirebaseauth")
+            xcframework.add(this)
+
             isStatic = true
         }
     }
@@ -67,6 +81,11 @@ kotlin {
             implementation(libs.kotlin.test)
         }
     }
+}
+
+// Register XCFramework assembly task
+tasks.register("assembleXCFramework") {
+    dependsOn("assembleKmmFirebaseAuthXCFramework")
 }
 
 android {
