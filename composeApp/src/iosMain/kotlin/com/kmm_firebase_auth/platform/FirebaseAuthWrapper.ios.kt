@@ -1,4 +1,4 @@
-package com.kmm_firebase_auth.domain.repository
+package com.kmm_firebase_auth.platform
 
 import com.kmm_firebase_auth.domain.model.AuthState
 import com.kmm_firebase_auth.domain.model.User
@@ -26,7 +26,7 @@ public actual class FirebaseAuthWrapper {
 
     // Remove the 'by lazy' - just get auth directly when needed
     private fun getAuth(): FIRAuth {
-        return FIRAuth.auth()
+        return auth()
     }
 
     actual fun configure() {

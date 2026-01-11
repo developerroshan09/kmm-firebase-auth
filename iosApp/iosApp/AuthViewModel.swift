@@ -6,24 +6,21 @@ final class AuthViewModel: ObservableObject {
 
     @Published private(set) var authState: AuthState = AuthState.LoggedOut()
 
-    private let authWrapper: FirebaseAuthWrapper
-    private var authStateTask: Task<Void, Never>?
-
-    init(authWrapper: FirebaseAuthWrapper = FirebaseAuthWrapper()) {
-        self.authWrapper = authWrapper
-//        self.authWrapper.configure()
-        
-        self.authWrapper.collectAuthState { state in
-            print("New AuthState: \(state)")
-            self.authState = state
+    private let authComponent = AuthComponent()
+    private var observer: AuthStateObserver?
+    
+    init() {        
+        observer = AuthStateObserver(
+            scope: KmmScope().main, flow: authComponent.authState
+        ) { [weak self] state in
+            self?.authState = state
         }
     }
 
-    // UI intent forwarding only
     func login(email: String, password: String) {
         Task {
             do {
-                let user = try await authWrapper.login(email: email, password: password)
+                let user = try await authComponent.loginUseCase.invoke(email: email, password: password)
                 print("Login success: \(user.id)")
             } catch {
                 print("Login failed: \(error)")
@@ -34,7 +31,7 @@ final class AuthViewModel: ObservableObject {
     func signUp(email: String, password: String) {
         Task {
             do {
-                let user = try await authWrapper.signUp(email: email, password: password)
+                let user = try await authComponent.signUpUseCase.invoke(email: email, password: password)
                 print("Signup success: \(user.id)")
             } catch {
                 print("Signup failed: \(error)")
@@ -43,25 +40,20 @@ final class AuthViewModel: ObservableObject {
     }
 
     func loginWithGoogle(idToken: String) async {
-            do {
-                // Call KMM suspend function
-                let user = try await authWrapper.loginWithGoogle(idToken: idToken)
+        do {
+            let user = try await authComponent.loginWithGoogleUseCase.invoke(idToken: idToken)
 
-                print("✅ Google login success: \(user.id), email: \(user.email ?? "N/A")")
-                // authState will automatically update if your KMM _authState Flow is updated
+            print("✅ Google login success: \(user.id), email: \(user.email ?? "N/A")")
+            // authState will automatically update if your KMM _authState Flow is updated
 
-            } catch {
-                print("❌ Google login failed: \(error)")
-            }
+        } catch {
+            print("❌ Google login failed: \(error)")
         }
-    
-    func loginAnonymously() {
-        authWrapper.signInAnonymously()
     }
 
     func logout() async {
         do {
-            try await authWrapper.logout()
+            try await authComponent.logoutUseCase.invoke()
             print("Logout success: ")
         } catch {
             print("Logout failed: \(error)")
@@ -69,6 +61,6 @@ final class AuthViewModel: ObservableObject {
     }
 
     deinit {
-        authStateTask?.cancel()
+        observer?.cancel()
     }
 }

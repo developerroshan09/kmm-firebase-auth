@@ -31,10 +31,6 @@ struct LoginView: View {
             Button("Sign Up") {
                 viewModel.signUp(email: email, password: password)
             }
-
-            Button("Continue as Guest") {
-                viewModel.loginAnonymously()
-            }
             
             Button("Login with Google") {
                     Task {

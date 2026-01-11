@@ -1,8 +1,9 @@
-package com.kmm_firebase_auth.domain.repository
+package com.kmm_firebase_auth.platform
 
 import com.kmm_firebase_auth.domain.model.AuthState
 import com.kmm_firebase_auth.domain.model.User
 import kotlinx.coroutines.flow.Flow
+
 /**
  * Defines the interface for all authentication-related data operations.
  * This is an abstraction in the domain layer, implemented by platform-specific

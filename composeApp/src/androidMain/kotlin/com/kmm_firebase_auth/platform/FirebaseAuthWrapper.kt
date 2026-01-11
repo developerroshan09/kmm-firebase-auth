@@ -1,4 +1,4 @@
-package com.kmm_firebase_auth.domain.repository
+package com.kmm_firebase_auth.platform
 
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
