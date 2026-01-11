@@ -15,7 +15,7 @@ let package = Package(
     targets: [
         .binaryTarget(
             name: "KmmFirebaseAuth",
-            // update everytime version
+            // update everytime version for new zip
             url: "https://github.com/developerroshan09/kmm-firebase-auth/releases/download/1.0.0/KmmFirebaseAuth.xcframework.zip",
             // change everytime for new zip
             checksum: "fd4c7a55304e8ea2a5de16cfddedc2fcb6c2bfae915edf27e62bdf56b460e2c5"
