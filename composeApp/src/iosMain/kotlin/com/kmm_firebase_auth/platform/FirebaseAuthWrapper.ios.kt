@@ -141,27 +141,14 @@ public actual class FirebaseAuthWrapper {
             }
         }
 
-//    actual fun logout(): Result<Unit> = try {
-//        auth().signOut(null)
-//        Result.success(Unit)
-//    } catch (e: Throwable) {
-//        Result.failure(e)
-//    }
 
-//    actual fun logout(): Result<Unit> = try {
-//        auth().signOut(null)
-//        Result.success(Unit)
-//    } catch (e: Throwable) {
-//        Result.failure(e)
-//    }
     actual suspend fun logout(): Result<Unit> {
-        try {
+        return try {
             auth().signOut(null)
             _authState.value = AuthState.LoggedOut
             Result.success(Unit)
         } catch (e: Throwable) {
             Result.failure(e)
         }
-        return Result.failure(IllegalStateException("Firebase logout() failed"))
     }
 }

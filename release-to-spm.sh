@@ -6,7 +6,7 @@ VERSION="1.0.1"  # Change this each time
 
 # --- IN DEVELOPMENT REPO (xcframework) ---
 ./gradlew clean
-./gradlew :composeApp:assembleComposeAppReleaseXCFramework
+./gradlew assembleKmmFirebaseAuthXCFramework
 cd composeApp/build/XCFrameworks/release
 zip -r KmmFirebaseAuth.xcframework.zip KmmFirebaseAuth.xcframework
 xcrun swift package compute-checksum KmmFirebaseAuth.xcframework.zip
