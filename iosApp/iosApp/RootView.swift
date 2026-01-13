@@ -8,16 +8,16 @@ struct RootView: View {
     var body: some View {
         switch viewModel.authState {
         case is AuthState.LoggedOut:
-            LoginView(viewModel: viewModel)
+            AuthContainerView(viewModel: viewModel)
 
         case let loggedIn as AuthState.LoggedIn:
-            HomeView(
+            HomeScreen(
                 email: loggedIn.user.email ?? "Anonymous",
                 onLogout: {
                     Task {
                         await viewModel.logout()
                     }
-                }
+                }, viewModel: viewModel
             )
 
         default:

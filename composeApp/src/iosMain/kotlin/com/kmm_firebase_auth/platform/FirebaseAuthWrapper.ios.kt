@@ -9,8 +9,12 @@ import kotlinx.coroutines.flow.asStateFlow
 import cocoapods.FirebaseAuth.*
 import cocoapods.FirebaseAuth.FIRAuth.Companion.auth
 import cocoapods.FirebaseCore.*
+import com.kmm_firebase_auth.domain.auth.AuthError
+import com.kmm_firebase_auth.domain.auth.AuthErrorCode
+import com.kmm_firebase_auth.domain.auth.AuthResult
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.coroutines.suspendCancellableCoroutine
+import platform.Foundation.NSError
 import platform.Foundation.NSLog
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -72,48 +76,23 @@ public actual class FirebaseAuthWrapper {
         }
     }
 
-    actual suspend fun signUp(email: String, password: String): User =
+    actual suspend fun signUp(email: String, password: String): AuthResult<User> =
             suspendCancellableCoroutine { continuation ->
-
                 auth().createUserWithEmail(email = email, password = password) { result, error ->
-                    if (error != null) {
-                        continuation.resumeWithException(Exception(error.localizedDescription))
-                        return@createUserWithEmail
-                    }
-
-                    val firebaseUser = result?.user()
-                    if (firebaseUser != null) {
-                        val user = User(id = firebaseUser.uid(), email = firebaseUser.email())
-                        _authState.value = AuthState.LoggedIn(user)
-                        continuation.resume(user)
-                    } else {
-                        continuation.resumeWithException(Exception("Firebase returned null user"))
-                    }
+                    continuation.resume(handleAuthResult(result, error))
                 }
             }
 
 
-    actual suspend fun login(email: String, password: String): User =
+    actual suspend fun login(email: String, password: String): AuthResult<User> =
         suspendCancellableCoroutine { continuation ->
             auth().signInWithEmail(email = email, password = password) { result, error ->
-                if (error != null) {
-                    continuation.resumeWithException(Exception(error.localizedDescription))
-                    return@signInWithEmail
-                }
-
-                val firebaseUser = result?.user()
-                if (firebaseUser != null) {
-                    val user = User(id = firebaseUser.uid(), email = firebaseUser.email())
-                    _authState.value = AuthState.LoggedIn(user)
-                    continuation.resume(user)
-                } else {
-                    continuation.resumeWithException(Exception("Firebase returned null user"))
-                }
+                continuation.resume(handleAuthResult(result, error))
             }
         }
 
 
-    actual suspend fun loginWithGoogle(idToken: String): User =
+    actual suspend fun loginWithGoogle(idToken: String): AuthResult<User> =
         suspendCancellableCoroutine { continuation ->
 
             val credential = FIRGoogleAuthProvider.credentialWithIDToken(
@@ -122,33 +101,90 @@ public actual class FirebaseAuthWrapper {
             )
 
             getAuth().signInWithCredential(credential) { result, error ->
-                if (error != null) {
-                    continuation.resumeWithException(Exception(error.localizedDescription))
-                    return@signInWithCredential
-                }
-
-                val firebaseUser = result?.user()
-                if (firebaseUser != null) {
-                    val user = User(
-                        id = firebaseUser.uid(),
-                        email = firebaseUser.email()
-                    )
-                    _authState.value = AuthState.LoggedIn(user)
-                    continuation.resume(user)
-                } else {
-                    continuation.resumeWithException(Exception("Google login returned null user"))
-                }
+                continuation.resume(handleAuthResult(result, error))
             }
         }
 
 
-    actual suspend fun logout(): Result<Unit> {
-        return try {
+    actual suspend fun logout(): AuthResult<Unit> =
+        try {
             auth().signOut(null)
             _authState.value = AuthState.LoggedOut
-            Result.success(Unit)
-        } catch (e: Throwable) {
-            Result.failure(e)
+            AuthResult.Success(Unit)
+        } catch (t: Throwable) {
+            AuthResult.Failure(
+                AuthError.Firebase(
+                    code = AuthErrorCode.UNKNOWN,
+                    message = t.message
+                )
+            )
+        }
+
+
+    @OptIn(ExperimentalForeignApi::class)
+    private fun handleAuthResult(
+        result: FIRAuthDataResult?,
+        error: NSError?
+    ): AuthResult<User> {
+        return when {
+            error != null -> {
+                AuthResult.Failure(mapFirebaseError(error))
+            }
+
+            result?.user() != null -> {
+                val firebaseUser = result.user()!!
+                val user = User(
+                    id = firebaseUser.uid(),
+                    email = firebaseUser.email()
+                )
+                _authState.value = AuthState.LoggedIn(user)
+                AuthResult.Success(user)
+            }
+
+            else -> {
+                AuthResult.Failure(
+                    AuthError.Firebase(
+                        code = AuthErrorCode.UNKNOWN,
+                        message = "Firebase returned null user"
+                    )
+                )
+            }
         }
     }
+
+    private fun mapFirebaseError(error: NSError): AuthError {
+        val code = when (error.code.toInt()) {
+            FirebaseAuthErrorCodes.USER_NOT_FOUND ->
+                AuthErrorCode.USER_NOT_FOUND
+
+            FirebaseAuthErrorCodes.WRONG_PASSWORD ->
+                AuthErrorCode.WRONG_PASSWORD
+
+            FirebaseAuthErrorCodes.INVALID_EMAIL ->
+                AuthErrorCode.INVALID_EMAIL
+
+            FirebaseAuthErrorCodes.EMAIL_ALREADY_IN_USE ->
+                AuthErrorCode.EMAIL_ALREADY_IN_USE
+
+            FirebaseAuthErrorCodes.NETWORK_ERROR ->
+                AuthErrorCode.NETWORK_ERROR
+
+            else ->
+                AuthErrorCode.UNKNOWN
+        }
+
+        return AuthError.Firebase(
+            code = code,
+            message = error.localizedDescription
+        )
+    }
+}
+
+// Firebase iOS Auth error codes (stable & documented)
+private object FirebaseAuthErrorCodes {
+    const val USER_NOT_FOUND = 17011
+    const val WRONG_PASSWORD = 17009
+    const val INVALID_EMAIL = 17008
+    const val EMAIL_ALREADY_IN_USE = 17007
+    const val NETWORK_ERROR = 17020
 }

@@ -7,9 +7,11 @@
 
 import SwiftUI
 
-struct HomeView: View {
+struct HomeScreen: View {
     let email: String
     let onLogout: () -> Void
+    
+    @ObservedObject var viewModel: AuthViewModel
     
     var body: some View {
         VStack(spacing: 24) {
@@ -21,5 +23,6 @@ struct HomeView: View {
             
             Button("Logout", action: onLogout)
         }
+        .appAlert(message: $viewModel.errorMessage)
     }
 }

@@ -10,18 +10,18 @@ class AuthRepositoryImpl(
     private val authWrapper: FirebaseAuthWrapper
 ) : AuthRepository {
 
-    override suspend fun signUp(email: String, password: String): User =
+    override suspend fun signUp(email: String, password: String) =
         authWrapper.signUp(email, password)
 
-    override suspend fun login(email: String, password: String): User =
+    override suspend fun login(email: String, password: String) =
         authWrapper.login(email, password)
 
-    override suspend fun loginWithGoogle(idToken: String): User =
+    override suspend fun loginWithGoogle(idToken: String) =
         authWrapper.loginWithGoogle(idToken)
 
-    override suspend fun logout(): Result<Unit> =
+    override suspend fun logout() =
         authWrapper.logout()
 
-    override fun observeAuthState(): Flow<AuthState> =
+    override fun observeAuthState() =
         authWrapper.getAuthState()
 }

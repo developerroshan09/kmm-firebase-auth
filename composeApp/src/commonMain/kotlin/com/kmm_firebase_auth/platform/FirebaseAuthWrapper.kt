@@ -1,5 +1,6 @@
 package com.kmm_firebase_auth.platform
 
+import com.kmm_firebase_auth.domain.auth.AuthResult
 import com.kmm_firebase_auth.domain.model.AuthState
 import com.kmm_firebase_auth.domain.model.User
 import kotlinx.coroutines.flow.Flow
@@ -18,19 +19,19 @@ public expect class FirebaseAuthWrapper() {
     /**
      * Registers a new user with email and password.
      */
-    suspend fun signUp(email: String, password: String): User
+    suspend fun signUp(email: String, password: String): AuthResult<User>
     /**
      * Authenticates an existing user with email and password.
      */
-    suspend fun login(email: String, password: String): User
+    suspend fun login(email: String, password: String): AuthResult<User>
 
     // google sign-in
-    suspend fun loginWithGoogle(idToken: String): User
+    suspend fun loginWithGoogle(idToken: String): AuthResult<User>
 
     /**
      * Logs out the current user.
      */
-    suspend fun logout(): Result<Unit>
+    suspend fun logout(): AuthResult<Unit>
 
     /**
      * Observes the authentication state of the user.
